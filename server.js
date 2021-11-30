@@ -11,6 +11,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const client = redis.createClient();
+// Use below if you have custom settings for your redis server
+// const client = redis.createClient({
+//   host: '<hostname>',
+//   port: <port>,
+//   password: '<password>'
+// });
 (async () => {
   client.on("error", (err) => console.log("Redis Client Error", err));
   await client.connect();
@@ -18,10 +24,10 @@ const client = redis.createClient();
 
 app.post("/set-user", async (req, res) => {
   const playerName = req.body.username;
-  const doesExist = await client.exists(playerName);
-  if (doesExist) {
+  const userExist = await client.exists(playerName);
+  if (userExist) {
     res.status(200).send({
-      success: true,
+      success: false,
       msg: "User already exists.Continue using this account?",
     });
   } else {
